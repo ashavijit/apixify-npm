@@ -9,7 +9,6 @@ const baseURL = "https://apixify-tunnel-server.onrender.com"
 export async function runClient(server: string, localUrl: string, username?: string, ttl = 21600) {
   const client = axios.create({ baseURL: server });
 
-  // Simple color helpers
   const reset = "\x1b[0m";
   const bold = (s: string) => `\x1b[1m${s}${reset}`;
   const green = (s: string) => `\x1b[32m${s}${reset}`;
@@ -17,7 +16,6 @@ export async function runClient(server: string, localUrl: string, username?: str
   const red = (s: string) => `\x1b[31m${s}${reset}`;
   const cyan = (s: string) => `\x1b[36m${s}${reset}`;
 
-  // Spinner utility
   const frames = ["⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏"]; // dots
   function startSpinner(text: string) {
     let i = 0;
@@ -31,12 +29,10 @@ export async function runClient(server: string, localUrl: string, username?: str
     return { stop };
   }
 
-  // First ensure local port is running before forwarding
   const parsedLocal = new URL(localUrl);
   const runningPort = parsedLocal.port;
   const spinner = startSpinner(`Waiting for local server on port ${runningPort} ...`);
-  // Poll until reachable
-  // eslint-disable-next-line no-constant-condition
+
   while (true) {
     try {
       await axios.get(localUrl, { timeout: 1200, validateStatus: () => true });
@@ -47,7 +43,6 @@ export async function runClient(server: string, localUrl: string, username?: str
     }
   }
 
-  // 1) Register tunnel after confirming local server is up
   let res;
   if (username) {
     res = await client.post<TunnelResponse>("/register", { username, ttl_seconds: ttl });
